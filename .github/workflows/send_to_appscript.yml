@@ -1,0 +1,22 @@
+name: Send JSON to Google Apps Script
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  forward:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check issue content
+        run: |
+          echo "Received new issue from ${{ github.actor }}"
+          echo "${{ github.event.issue.body }}" > data.json
+
+      - name: Send data to Google Apps Script
+        env:
+          APP_SCRIPT_URL: ${{ secrets.APP_SCRIPT_URL }}
+        run: |
+          curl -X POST "$APP_SCRIPT_URL" \
+            -H "Content-Type: application/json" \
+            --data @"data.json"
